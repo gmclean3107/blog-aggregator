@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/gmclean3107/blog-aggregator/internal/config"
 )
@@ -14,17 +14,32 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
-	err = cfg.SetUser("Gerard")
-
-	if err != nil {
-		log.Fatalf("couldn't set current user: %v", err)
+	state := &State{&cfg}
+	commands := Commands{
+		commands: map[string]func(*State, Command) error{},
 	}
 
-	cfg, err = config.Read()
+	err = commands.register("login", handlerLogin)
 
 	if err != nil {
-		log.Fatalf("error reading config: %v", err)
+		log.Fatalf("error registering command: %v", err)
 	}
 
-	fmt.Println(cfg)
+	args := os.Args
+
+	if len(args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
+	}
+
+	c := Command{
+		command: args[1],
+		args:    args[2:],
+	}
+
+	err = commands.run(state, c)
+
+	if err != nil {
+		log.Fatalf("error running command: %v", err)
+	}
+
 }
