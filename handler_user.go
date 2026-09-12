@@ -62,6 +62,11 @@ func handlerLogin(s *State, cmd Command) error {
 }
 
 func handlerGetUsers(s *State, cmd Command) error {
+
+	if len(cmd.args) != 0 {
+		return fmt.Errorf("usage: %v", cmd.command)
+	}
+
 	users, err := s.db.GetUsers(context.Background())
 
 	if err != nil {
