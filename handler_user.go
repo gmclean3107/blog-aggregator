@@ -69,3 +69,11 @@ func handlerLogin(s *State, cmd Command) error {
 
 	return nil
 }
+
+func handlerReset(s *State, cmd Command) error {
+	if err := s.db.DeleteUsers(context.Background()); err != nil {
+		return err
+	}
+	fmt.Println("Users table reset successfully!")
+	return nil
+}

@@ -42,6 +42,12 @@ func main() {
 		log.Fatalf("error registering command: %v", err)
 	}
 
+	err = commands.register("reset", handlerReset)
+
+	if err != nil {
+		log.Fatalf("error deleting users: %v", err)
+	}
+
 	args := os.Args
 
 	if len(args) < 2 {
