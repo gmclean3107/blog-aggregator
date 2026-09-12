@@ -60,3 +60,21 @@ func handlerLogin(s *State, cmd Command) error {
 
 	return nil
 }
+
+func handlerGetUsers(s *State, cmd Command) error {
+	users, err := s.db.GetUsers(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("error getting list of user's names: %v", err)
+	}
+
+	for _, name := range users {
+		if name == s.cfg.Current_user_name {
+			fmt.Printf("%s (current)\n", name)
+		} else {
+			fmt.Println(name)
+		}
+	}
+
+	return nil
+}
