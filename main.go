@@ -30,33 +30,17 @@ func main() {
 		commands: map[string]func(*State, Command) error{},
 	}
 
-	err = commands.register("login", handlerLogin)
+	commands.register("login", handlerLogin)
+	commands.register("register", handlerRegister)
+	commands.register("reset", handlerReset)
 
-	if err != nil {
-		log.Fatalf("error registering command: %v", err)
-	}
-
-	err = commands.register("register", handlerRegister)
-
-	if err != nil {
-		log.Fatalf("error registering command: %v", err)
-	}
-
-	err = commands.register("reset", handlerReset)
-
-	if err != nil {
-		log.Fatalf("error deleting users: %v", err)
-	}
-
-	args := os.Args
-
-	if len(args) < 2 {
+	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
 	}
 
 	c := Command{
-		command: args[1],
-		args:    args[2:],
+		command: os.Args[1],
+		args:    os.Args[2:],
 	}
 
 	err = commands.run(state, c)
