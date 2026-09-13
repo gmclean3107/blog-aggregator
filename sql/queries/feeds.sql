@@ -23,3 +23,13 @@ FROM feeds JOIN users ON feeds.user_id = users.id;
 -- name: GetFeed :one
 SELECT * FROM feeds
 WHERE $1 = url;
+
+-- name: MarkFeedFetched :exec
+UPDATE feeds 
+SET updated_at = NOW(), last_fetched_at = NOW()
+WHERE $1 = id;
+
+-- name: GetNextFeedToFetch :one
+SELECT * FROM feeds
+ORDER BY last_fetched_at ASC NULLS FIRST
+LIMIT 1;
