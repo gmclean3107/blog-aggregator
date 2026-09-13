@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAddFeed(s *State, cmd Command) error {
+func handlerAddFeed(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 2 {
 		return fmt.Errorf("usage: %s <feed_name> <feed_url>", cmd.command)
 	}
@@ -38,12 +38,6 @@ func handlerAddFeed(s *State, cmd Command) error {
 	}
 
 	fmt.Printf("successfully added feed: %v\n", dbFeed)
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.Current_user_name)
-
-	if err != nil {
-		return fmt.Errorf("error fetching current user: %v", err)
-	}
 
 	feedFollow := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
@@ -79,15 +73,9 @@ func handlerGetFeeds(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerFollow(s *State, cmd Command) error {
+func handlerFollow(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("usage: %v <feed_url>", cmd.command)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.Current_user_name)
-
-	if err != nil {
-		return fmt.Errorf("error fetching current user: %v", err)
 	}
 
 	feed, err := s.db.GetFeed(context.Background(), cmd.args[0])
@@ -115,15 +103,9 @@ func handlerFollow(s *State, cmd Command) error {
 	return nil
 }
 
-func handlerFollowing(s *State, cmd Command) error {
+func handlerFollowing(s *State, cmd Command, user database.User) error {
 	if len(cmd.args) != 0 {
 		return fmt.Errorf("usage: %v", cmd.command)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.Current_user_name)
-
-	if err != nil {
-		return fmt.Errorf("error fetching user: %v", err)
 	}
 
 	feeds, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
