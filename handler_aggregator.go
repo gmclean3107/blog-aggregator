@@ -54,7 +54,7 @@ func scrapeFeeds(s *State) error {
 		pub, err := time.Parse(item.PubDate, item.PubDate)
 
 		if err != nil {
-			fmt.Printf("error parsing published date: ", err)
+			fmt.Printf("error parsing published date: %v", err)
 		}
 
 		post := database.CreatePostParams{
