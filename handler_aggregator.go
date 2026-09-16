@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/gmclean3107/blog-aggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 func handlerAgg(s *State, cmd Command) error {
@@ -48,7 +51,23 @@ func scrapeFeeds(s *State) error {
 	}
 
 	for _, item := range rssFeed.Channel.Item {
-		fmt.Println(item.Title)
+		pub, err := time.Parse(item.PubDate, item.PubDate)
+
+		if err != nil {
+			fmt.Printf("error parsing published date: ", err)
+		}
+
+		post := database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Url:         feed.Url,
+			Description: item.Description,
+			PublishedAt: pub,
+			FeedID:      feed.ID,
+		}
+		s.db.CreatePost(context.Background(), post)
 	}
 
 	return nil
